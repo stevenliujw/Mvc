@@ -27,33 +27,18 @@ namespace Microsoft.AspNetCore.Mvc.Authorization
         }
 
         [Fact]
-        public async Task AuthorizeFilter_CreatedWithAuthorizeData_ThrowsWhenOnAuthorizationAsyncIsCalled()
+        public async Task AuthorizeFilter_DefaultConstructor_CanAuthorizeNonAuthenticatedUser()
         {
             // Arrange
-            var authorizeFilter = new AuthorizeFilter(new[] { new AuthorizeAttribute() });
-            var authorizationContext = GetAuthorizationContext();
-            var expected = "An AuthorizationPolicy cannot be created without a valid instance of " +
-                "IAuthorizationPolicyProvider.";
+            var authorizeFilter = new AuthorizeFilter();
+            var authorizationContext = GetAuthorizationContext(anonymous: true);
+            authorizationContext.HttpContext.User = new ClaimsPrincipal();
 
-            // Act & Assert
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => authorizeFilter.OnAuthorizationAsync(authorizationContext));
-            Assert.Equal(expected, ex.Message);
-        }
+            // Act
+            await authorizeFilter.OnAuthorizationAsync(authorizationContext);
 
-        [Fact]
-        public async Task AuthorizeFilter_CreatedWithPolicy_ThrowsWhenOnAuthorizationAsyncIsCalled()
-        {
-            // Arrange
-            var authorizeFilter = new AuthorizeFilter(new[] { new AuthorizeAttribute() });
-            var authorizationContext = GetAuthorizationContext();
-            var expected = "An AuthorizationPolicy cannot be created without a valid instance of " +
-                "IAuthorizationPolicyProvider.";
-
-            // Act & Assert
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => authorizeFilter.OnAuthorizationAsync(authorizationContext));
-            Assert.Equal(expected, ex.Message);
+            // Assert
+            var result = Assert.IsType<ChallengeResult>(authorizationContext.Result);
         }
 
         [Fact]
