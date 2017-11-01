@@ -187,7 +187,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
                         }
 
                         var metadata = GetPathMetadata(context.Metadata, eventArgs.ErrorContext.Path);
-                        context.ModelState.TryAddModelError(key, eventArgs.ErrorContext.Error, metadata);
+                        var modelStateException = WrapExceptionForModelState(eventArgs.ErrorContext.Error);
+                        context.ModelState.TryAddModelError(key, modelStateException, metadata);
 
                         _logger.JsonInputException(eventArgs.ErrorContext.Error);
 
@@ -314,6 +315,16 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             }
 
             return metadata;
+        }
+
+        private Exception WrapExceptionForModelState(Exception exception)
+        {
+            // It's not known that Json.NET currently ever raises error events with exceptions
+            // other than these two types, but we're being conservative and limiting which ones
+            // we regard as having safe messages to expose to clients
+            return (exception is JsonReaderException || exception is JsonSerializationException)
+                ? new InputFormatterException(exception.Message, exception)
+                : exception;
         }
     }
 }
