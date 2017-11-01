@@ -69,7 +69,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters.Json.Internal
                 _jsonSerializerSettings,
                 _charPool,
                 _objectPoolProvider,
-                options.SuppressInputFormatterBuffering));
+                options.SuppressInputFormatterBuffering,
+                options.UseJsonDeserializationExceptionMessagesInModelState));
 
             var jsonInputLogger = _loggerFactory.CreateLogger<JsonInputFormatter>();
             options.InputFormatters.Add(new JsonInputFormatter(

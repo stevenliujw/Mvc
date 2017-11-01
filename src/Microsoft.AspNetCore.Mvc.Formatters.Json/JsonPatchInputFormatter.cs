@@ -55,7 +55,30 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             ArrayPool<char> charPool,
             ObjectPoolProvider objectPoolProvider,
             bool suppressInputFormatterBuffering)
-            : base(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering)
+            : this(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering, treatJsonDeserializationExceptionsAsSafe: true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="JsonPatchInputFormatter"/> instance.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        /// <param name="serializerSettings">
+        /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
+        /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
+        /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
+        /// </param>/// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
+        /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
+        /// <param name="suppressInputFormatterBuffering">Flag to buffer entire request body before deserializing it.</param>
+        /// <param name="treatJsonDeserializationExceptionsAsSafe">If <see langword="true"/>, JSON deserialization exception messages will be added to model state.</param>
+        public JsonPatchInputFormatter(
+            ILogger logger,
+            JsonSerializerSettings serializerSettings,
+            ArrayPool<char> charPool,
+            ObjectPoolProvider objectPoolProvider,
+            bool suppressInputFormatterBuffering,
+            bool treatJsonDeserializationExceptionsAsSafe)
+            : base(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering, treatJsonDeserializationExceptionsAsSafe)
         {
             // Clear all values and only include json-patch+json value.
             SupportedMediaTypes.Clear();
