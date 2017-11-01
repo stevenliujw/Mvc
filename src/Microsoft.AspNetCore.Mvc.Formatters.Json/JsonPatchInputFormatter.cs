@@ -27,7 +27,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
         /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
         /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
         /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
-        /// </param>/// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
+        /// </param>
+        /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
         /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
         public JsonPatchInputFormatter(
             ILogger logger,
@@ -46,7 +47,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
         /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
         /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
         /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
-        /// </param>/// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
+        /// </param>
+        /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
         /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
         /// <param name="suppressInputFormatterBuffering">Flag to buffer entire request body before deserializing it.</param>
         public JsonPatchInputFormatter(
@@ -67,7 +69,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
         /// The <see cref="JsonSerializerSettings"/>. Should be either the application-wide settings
         /// (<see cref="MvcJsonOptions.SerializerSettings"/>) or an instance
         /// <see cref="JsonSerializerSettingsProvider.CreateSerializerSettings"/> initially returned.
-        /// </param>/// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
+        /// </param>
+        /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
         /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
         /// <param name="suppressInputFormatterBuffering">Flag to buffer entire request body before deserializing it.</param>
         /// <param name="treatJsonDeserializationExceptionsAsSafe">If <see langword="true"/>, JSON deserialization exception messages will be added to model state.</param>
