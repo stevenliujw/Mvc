@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Core;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Microsoft.AspNetCore.Mvc
@@ -48,8 +49,20 @@ namespace Microsoft.AspNetCore.Mvc
                 {
                     var errorMessages = errors.Select(error =>
                     {
-                        return string.IsNullOrEmpty(error.ErrorMessage) ?
-                            Resources.SerializableError_DefaultError : error.ErrorMessage;
+                        if (error.Exception is InputFormatterException)
+                        {
+                            // InputFormatterException is a signal that the message is safe to
+                            // return to clients
+                            return error.Exception.Message;
+                        }
+                        else if (!string.IsNullOrEmpty(error.ErrorMessage))
+                        {
+                            return error.ErrorMessage;
+                        }
+                        else
+                        {
+                            return Resources.SerializableError_DefaultError;
+                        }
                     }).ToArray();
 
                     Add(key, errorMessages);

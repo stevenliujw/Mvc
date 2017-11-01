@@ -1,6 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.IO;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Xunit;
 
@@ -77,6 +79,42 @@ namespace Microsoft.AspNetCore.Mvc
 
             // Assert
             Assert.Empty(serializableError);
+        }
+
+        [Fact]
+        public void UsesModelStateExceptionMessage_IfInputFormatterException()
+        {
+            // Arrange
+            var modelState = new ModelStateDictionary();
+            var exception = new InputFormatterException("This is a safe message");
+            var provider = new EmptyModelMetadataProvider();
+            var metadata = provider.GetMetadataForProperty(typeof(string), nameof(string.Length));
+            modelState.AddModelError("key1", exception, metadata);
+
+            // Act
+            var serializableError = new SerializableError(modelState);
+
+            // Assert
+            var arr = Assert.IsType<string[]>(serializableError["key1"]);
+            Assert.Equal("This is a safe message", arr[0]);
+        }
+
+        [Fact]
+        public void DoesNotUseModelStateExceptionMessage_IfNotInputFormatterException()
+        {
+            // Arrange
+            var modelState = new ModelStateDictionary();
+            var exception = new DirectoryNotFoundException("This is an unsafe message");
+            var provider = new EmptyModelMetadataProvider();
+            var metadata = provider.GetMetadataForProperty(typeof(string), nameof(string.Length));
+            modelState.AddModelError("key1", exception, metadata);
+
+            // Act
+            var serializableError = new SerializableError(modelState);
+
+            // Assert
+            var arr = Assert.IsType<string[]>(serializableError["key1"]);
+            Assert.Equal("The input was not valid.", arr[0]);
         }
     }
 }
