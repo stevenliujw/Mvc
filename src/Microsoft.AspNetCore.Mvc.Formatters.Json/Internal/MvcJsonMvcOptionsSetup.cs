@@ -77,7 +77,8 @@ namespace Microsoft.AspNetCore.Mvc.Formatters.Json.Internal
                 _jsonSerializerSettings,
                 _charPool,
                 _objectPoolProvider,
-                options.SuppressInputFormatterBuffering));
+                options.SuppressInputFormatterBuffering,
+                options.UseJsonDeserializationExceptionMessagesInModelState));
 
             options.FormatterMappings.SetMediaTypeMappingForFormat("json", MediaTypeHeaderValue.Parse("application/json"));
 

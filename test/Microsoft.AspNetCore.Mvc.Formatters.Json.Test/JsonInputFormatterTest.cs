@@ -575,6 +575,41 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             Assert.Equal(expectedMessage, modelError.Exception.Message);
         }
 
+        [Fact]
+        public async Task ReadAsync_WhenTreatJsonDeserializationExceptionsAsSafeIsFalse_DoesNotWrapJsonInputExceptions()
+        {
+            // Arrange
+            var logger = GetLogger();
+            var formatter = new JsonInputFormatter(
+                logger, _serializerSettings, ArrayPool<char>.Shared, _objectPoolProvider,
+                suppressInputFormatterBuffering: false, treatJsonDeserializationExceptionsAsSafe: false);
+            var contentBytes = Encoding.UTF8.GetBytes("{");
+            var modelStateKey = string.Empty;
+
+            var modelState = new ModelStateDictionary();
+            var httpContext = GetHttpContext(contentBytes);
+            var provider = new EmptyModelMetadataProvider();
+            var metadata = provider.GetMetadataForType(typeof(User));
+            var context = new InputFormatterContext(
+                httpContext,
+                modelName: string.Empty,
+                modelState: modelState,
+                metadata: metadata,
+                readerFactory: new TestHttpRequestStreamReaderFactory().CreateReader);
+
+            // Act
+            var result = await formatter.ReadAsync(context);
+
+            // Assert
+            Assert.True(result.HasError);
+            Assert.True(!modelState.IsValid);
+            Assert.True(modelState.ContainsKey(modelStateKey));
+
+            var modelError = modelState[modelStateKey].Errors.Single();
+            Assert.IsNotType<InputFormatterException>(modelError.Exception);
+            Assert.Empty(modelError.ErrorMessage);
+        }
+
         private class TestableJsonInputFormatter : JsonInputFormatter
         {
             public TestableJsonInputFormatter(JsonSerializerSettings settings)
