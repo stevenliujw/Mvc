@@ -319,7 +319,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             // Key is the empty string because this was a top-level binding.
             var entry = Assert.Single(bindingContext.ModelState);
             Assert.Equal(string.Empty, entry.Key);
-            Assert.IsType<JsonReaderException>(entry.Value.Errors[0].Exception);
+            Assert.IsType<InputFormatterException>(entry.Value.Errors[0].Exception);
         }
 
         public static TheoryData<IInputFormatter, InputFormatterExceptionModelStatePolicy> DerivedFormattersThrowingInputFormatterException
@@ -403,7 +403,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             // Key is the empty string because this was a top-level binding.
             var entry = Assert.Single(bindingContext.ModelState);
             Assert.Equal(string.Empty, entry.Key);
-            Assert.IsType<JsonReaderException>(entry.Value.Errors[0].Exception);
+            Assert.IsType<InputFormatterException>(entry.Value.Errors[0].Exception);
         }
 
         // Throwing Non-InputFormatterException
