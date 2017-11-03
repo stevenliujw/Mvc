@@ -582,7 +582,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             var logger = GetLogger();
             var formatter = new JsonInputFormatter(
                 logger, _serializerSettings, ArrayPool<char>.Shared, _objectPoolProvider,
-                suppressInputFormatterBuffering: false, treatJsonDeserializationExceptionsAsSafe: false);
+                suppressInputFormatterBuffering: false, suppressJsonDeserializationExceptionsMessages: true);
             var contentBytes = Encoding.UTF8.GetBytes("{");
             var modelStateKey = string.Empty;
 

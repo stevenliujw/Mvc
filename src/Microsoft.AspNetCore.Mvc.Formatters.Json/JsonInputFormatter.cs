@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
         private readonly ILogger _logger;
         private readonly ObjectPoolProvider _objectPoolProvider;
         private readonly bool _suppressInputFormatterBuffering;
-        private readonly bool _treatJsonDeserializationExceptionsAsSafe;
+        private readonly bool _suppressJsonDeserializationExceptionsMessages;
 
         private ObjectPool<JsonSerializer> _jsonSerializerPool;
 
@@ -71,7 +71,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             ArrayPool<char> charPool,
             ObjectPoolProvider objectPoolProvider,
             bool suppressInputFormatterBuffering)
-            : this(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering, treatJsonDeserializationExceptionsAsSafe: true)
+            : this(logger, serializerSettings, charPool, objectPoolProvider, suppressInputFormatterBuffering, suppressJsonDeserializationExceptionsMessages: false)
         {
             // This constructor by default treats JSON deserialization exceptions as safe
             // because this is the default for applications generally
@@ -89,14 +89,14 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
         /// <param name="charPool">The <see cref="ArrayPool{Char}"/>.</param>
         /// <param name="objectPoolProvider">The <see cref="ObjectPoolProvider"/>.</param>
         /// <param name="suppressInputFormatterBuffering">Flag to buffer entire request body before deserializing it.</param>
-        /// <param name="treatJsonDeserializationExceptionsAsSafe">If <see langword="true"/>, JSON deserialization exception messages will be added to model state.</param>
+        /// <param name="suppressJsonDeserializationExceptionsMessages">If <see langword="true"/>, JSON deserialization exception messages will replaced by a generic message in model state.</param>
         public JsonInputFormatter(
             ILogger logger,
             JsonSerializerSettings serializerSettings,
             ArrayPool<char> charPool,
             ObjectPoolProvider objectPoolProvider,
             bool suppressInputFormatterBuffering,
-            bool treatJsonDeserializationExceptionsAsSafe)
+            bool suppressJsonDeserializationExceptionsMessages)
         {
             if (logger == null)
             {
@@ -123,7 +123,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             _charPool = new JsonArrayPool<char>(charPool);
             _objectPoolProvider = objectPoolProvider;
             _suppressInputFormatterBuffering = suppressInputFormatterBuffering;
-            _treatJsonDeserializationExceptionsAsSafe = treatJsonDeserializationExceptionsAsSafe;
+            _suppressJsonDeserializationExceptionsMessages = suppressJsonDeserializationExceptionsMessages;
 
             SupportedEncodings.Add(UTF8EncodingWithoutBOM);
             SupportedEncodings.Add(UTF16EncodingLittleEndian);
@@ -350,11 +350,13 @@ namespace Microsoft.AspNetCore.Mvc.Formatters
             // It's not known that Json.NET currently ever raises error events with exceptions
             // other than these two types, but we're being conservative and limiting which ones
             // we regard as having safe messages to expose to clients
-            var treatAsSafe = _treatJsonDeserializationExceptionsAsSafe
-                && (exception is JsonReaderException || exception is JsonSerializationException);
-            return treatAsSafe
-                ? new InputFormatterException(exception.Message, exception)
-                : exception;
+            var isJsonExceptionType =
+                exception is JsonReaderException || exception is JsonSerializationException;
+            var suppressOriginalMessage =
+                _suppressJsonDeserializationExceptionsMessages || !isJsonExceptionType;
+            return suppressOriginalMessage
+                ? exception
+                : new InputFormatterException(exception.Message, exception);
         }
     }
 }

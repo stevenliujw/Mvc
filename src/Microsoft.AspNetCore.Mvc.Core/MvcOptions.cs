@@ -179,11 +179,11 @@ namespace Microsoft.AspNetCore.Mvc
 
         /// <summary>
         /// Gets or sets a flag to determine whether, if an action receives invalid JSON in
-        /// the request body, the JSON deserialization exception message should be added
-        /// to model state.
-        /// <see langword="true"/> by default, meaning that clients may receive details about
+        /// the request body, the JSON deserialization exception message should be replaced
+        /// by a generic error message in model state.
+        /// <see langword="false"/> by default, meaning that clients may receive details about
         /// why the JSON they posted is considered invalid.
         /// </summary>
-        public bool UseJsonDeserializationExceptionMessagesInModelState { get; set; } = true;
+        public bool SuppressJsonDeserializationExceptionMessagesInModelState { get; set; } = false;
     }
 }

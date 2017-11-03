@@ -70,7 +70,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters.Json.Internal
                 _charPool,
                 _objectPoolProvider,
                 options.SuppressInputFormatterBuffering,
-                options.UseJsonDeserializationExceptionMessagesInModelState));
+                options.SuppressJsonDeserializationExceptionMessagesInModelState));
 
             var jsonInputLogger = _loggerFactory.CreateLogger<JsonInputFormatter>();
             options.InputFormatters.Add(new JsonInputFormatter(
@@ -79,7 +79,7 @@ namespace Microsoft.AspNetCore.Mvc.Formatters.Json.Internal
                 _charPool,
                 _objectPoolProvider,
                 options.SuppressInputFormatterBuffering,
-                options.UseJsonDeserializationExceptionMessagesInModelState));
+                options.SuppressJsonDeserializationExceptionMessagesInModelState));
 
             options.FormatterMappings.SetMediaTypeMappingForFormat("json", MediaTypeHeaderValue.Parse("application/json"));
 
